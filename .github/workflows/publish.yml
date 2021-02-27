@@ -1,0 +1,23 @@
+
+on:
+  push:
+    branches: master
+
+env:
+
+
+jobs:
+  generate_matrix:
+    name: Find services
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: "{\"path\": ${{ steps.generate_matrix.outputs.matrix }} }"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Generate matrix
+        id: generate_matrix
+        uses: ReyahSolutions/matrix-git-generator@v1
+        with:
+          filters: |
+            service.*/**
