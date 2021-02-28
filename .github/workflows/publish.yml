@@ -41,4 +41,6 @@ jobs:
         uses: azure/CLI@v1
         with:
           azcliversion: latest
-          inlineScript: 
+          inlineScript: |
+            TEMPLATE="${{ matrix.template }}"
+            az ts create --subscription d3fed5a4-2ebb-4ad4-93c6-51afcbe01350 --resource-group ComponentSpecs --location "eastus" --name "$(basename $(dirname $TEMPLATE))" --version "$(cat $TEMPLATE | jq --raw-output '.contentVersion')" --template-file "$TEMPLATE" --yes
