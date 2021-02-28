@@ -32,7 +32,7 @@
 	{
 		"resourceId": {
 			"type": "string",
-			"value": "[reference(resourceId('Microsoft.Storage/storageAccounts', parameters('name')), '2019-06-01', 'Full').id]"
+			"value": "[reference(resourceId('Microsoft.Storage/storageAccounts', parameters('name')), '2019-06-01', 'Full').resourceId]"
 		}
 	}
 }
