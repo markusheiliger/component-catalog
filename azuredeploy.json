@@ -1,0 +1,59 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {},
+	"functions": [],
+	"variables": 
+	{
+		"resourcePrefix": "[concat('foo-', uniqueString(resourceGroup().id))]",
+		"storageAccountName": "[replace(variables('resourcePrefix'), '-', '')]",
+		"keyVaultName": "[concat(variables('resourcePrefix'), '-kv')]"
+	},
+	"resources": [
+		{
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2020-06-01",
+			"name": "[concat(deployment().name, '-', variables('storageAccountName'))]",
+			"properties": {
+				"mode": "Incremental",
+				"templateLink": {
+					"id": "[resourceId('ComponentSpecs', 'Microsoft.Resources/templateSpecs/versions', 'StorageAccount', '1.0.0.0')]"
+				},
+				"parameters":{
+					"name" :{
+						"value": "[variables('storageAccountName')]"
+					}
+				}
+			}
+		},
+		{
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2020-06-01",
+			"name": "[concat(deployment().name, '-', variables('keyVaultName'))]",
+			"dependsOn":[
+				"[resourceId('Microsoft.Resources/deployments', concat(deployment().name, '-', variables('storageAccountName')))]"
+			],
+			"properties": {
+				"mode": "Incremental",
+				"templateLink": {
+					"id": "[resourceId('ComponentSpecs', 'Microsoft.Resources/templateSpecs/versions', 'KeyVault', '1.0.0.0')]"
+				},
+				"parameters":{
+					"name" :{
+						"value": "[variables('keyVaultName')]"
+					}
+				}
+			}
+		}
+	],
+	"outputs": {
+		"storageAccountId": {
+			"type": "string",
+			"value": "[reference(resourceId('Microsoft.Resources/deployments',concat(deployment().name, '-', variables('storageAccountName'))), '2020-06-01').outputs.resourceId.value]"
+		},
+		"keyVaultId": {
+			"type": "string",
+			"value": "[reference(resourceId('Microsoft.Resources/deployments',concat(deployment().name, '-', variables('keyVaultName'))), '2020-06-01').outputs.resourceId.value]"
+		}
+	}
+}
