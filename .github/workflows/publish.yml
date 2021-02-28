@@ -1,23 +1,34 @@
 
 on:
   push:
-    branches: master
+    branches: [ master ]
 
 env:
 
 
 jobs:
+
   generate_matrix:
-    name: Find services
+    name: Generate Matrix
     runs-on: ubuntu-latest
-    outputs:
-      matrix: "{\"path\": ${{ steps.generate_matrix.outputs.matrix }} }"
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - name: Generate matrix
+      - name: Generate Matrix
         id: generate_matrix
-        uses: ReyahSolutions/matrix-git-generator@v1
-        with:
-          filters: |
-            service.*/**
+        run: echo "::set-output name=templates::$(find . -name 'azuredeploy.json' | jq -R -s -c 'split("\n")[:-1]')"
+    outputs:
+      templates: ${{ steps.generate_matrix.outputs.templates }}
+
+  publish_spec:
+    needs: generate_matrix
+    runs-on: ubuntu-latest
+    strategy:
+      max-parallel: 5
+      matrix:
+        template: ${{ fromJson(needs.generate_matrix.outputs.templates) }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Publish Spec
+        run: cat ${{ matrix.template }}
