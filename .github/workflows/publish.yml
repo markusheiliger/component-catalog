@@ -1,32 +1,35 @@
+name: Publish Specs
 
 on:
   push:
     branches: [ master ]
-
-env:
-
 
 jobs:
 
   generate_matrix:
     name: Generate Matrix
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout
         uses: actions/checkout@v2
       - name: Generate Matrix
         id: generate_matrix
         run: echo "::set-output name=templates::$(find . -name 'azuredeploy.json' | jq -R -s -c 'split("\n")[:-1]')"
+
     outputs:
       templates: ${{ steps.generate_matrix.outputs.templates }}
 
   publish_spec:
+    name: Publish Spec
     needs: generate_matrix
     runs-on: ubuntu-latest
+
     strategy:
       max-parallel: 5
       matrix:
         template: ${{ fromJson(needs.generate_matrix.outputs.templates) }}
+    
     steps:
       - name: Checkout
         uses: actions/checkout@v2
