@@ -47,7 +47,7 @@
 	{
 		"resourceId": {
 			"type": "string",
-			"value": "[reference(resourceId('Microsoft.KeyVault/vaults', parameters('name')), '2016-10-01', 'Full').resourceId]"
+			"value": "[resourceId('Microsoft.KeyVault/vaults', parameters('name'))]"
 		}
 	}
 }
