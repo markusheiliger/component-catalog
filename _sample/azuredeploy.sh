@@ -6,6 +6,7 @@ while [ $# -gt 0 ]; do
   if [[ $1 == *"--"* ]]; then
     param="${1/--/}"
     declare PARAM_${param^^}="$2"
+    
     # echo "PARAM_${param^^}=$2"
   fi
   shift
