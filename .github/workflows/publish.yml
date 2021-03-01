@@ -3,10 +3,7 @@ name: Publish Specs
 on:
   push:
     branches: [ master ]
-
-env:
-  SUBSCRIPTION: e2d5340c-6f88-4bc6-8c1e-c5792ec4262b
-  
+    
 jobs:
 
   generate_matrix:
@@ -46,4 +43,4 @@ jobs:
           azcliversion: latest
           inlineScript: |
             TEMPLATE="${{ matrix.template }}"
-            az ts create --subscription $SUBSCRIPTION --resource-group ComponentSpecs --location "eastus" --name "$(basename $(dirname $TEMPLATE))" --version "$(cat $TEMPLATE | jq --raw-output '.contentVersion')" --template-file "$TEMPLATE" --yes
+            az ts create --subscription e2d5340c-6f88-4bc6-8c1e-c5792ec4262b --resource-group ComponentSpecs --location "eastus" --name "$(basename $(dirname $TEMPLATE))" --version "$(cat $TEMPLATE | jq --raw-output '.contentVersion')" --template-file "$TEMPLATE" --yes
