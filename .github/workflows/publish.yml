@@ -50,7 +50,7 @@ jobs:
           subscriptionId: ${{ env.SUBSCRIPTION }}
           resourceGroupName: ${{ env.RESOURCEGROUP }}
           template: ./_catalog/azuredeploy.json
-          parameters: repositoryUrl="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY" repositoryBranch="${{ steps.extract_branch.outputs.branch }}" repositoryToken="${{ secrets.GITHUB_TOKEN }}"
+          parameters: repositoryUrl="${{ GITHUB_SERVER_URL }}/${{ GITHUB_REPOSITORY }}" repositoryBranch="${{ steps.extract_branch.outputs.branch }}" repositoryToken="${{ secrets.GITHUB_TOKEN }}"
 
   publish_spec:
     name: Publish Spec
