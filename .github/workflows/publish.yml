@@ -35,22 +35,19 @@ jobs:
         uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
-      - name: Extract branch name
-        id: extract_branch
+      - name: Extract Context Information
+        id: extract_context
         shell: bash
-        run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
-      # - name: Ensure Catalog Site
-      #   uses: azure/CLI@v1
-      #   with:
-      #     azcliversion: latest
-      #     inlineScript: az deployment group create --subscription "$SUBSCRIPTION" --resource-group "$RESOURCEGROUP" --name "$( uuidgen )" --no-prompt true --template-file "./_catalog/azuredeploy.json" --parameters repositoryUrl="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY" --parameters repositoryBranch="${{ steps.extract_branch.outputs.branch }}" --parameters repositoryToken="${{ secrets.GITHUB_TOKEN }}"
+        run: |
+          echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+          echo "##[set-output name=repo;]$(echo ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY})"
       - name: Ensure Catalog Site
         uses: azure/arm-deploy@v1
         with:
           subscriptionId: ${{ env.SUBSCRIPTION }}
           resourceGroupName: ${{ env.RESOURCEGROUP }}
           template: ./_catalog/azuredeploy.json
-          parameters: repositoryUrl="${{ env.GITHUB_SERVER_URL }}/${{ env.GITHUB_REPOSITORY }}" repositoryBranch="${{ steps.extract_branch.outputs.branch }}" repositoryToken="${{ secrets.GITHUB_TOKEN }}"
+          parameters: repositoryUrl="${{ steps.extract_context.outputs.repo }}" repositoryBranch="${{ steps.extract_context.outputs.branch }}" repositoryToken="${{ secrets.GITHUB_TOKEN }}"
 
   publish_spec:
     name: Publish Spec
