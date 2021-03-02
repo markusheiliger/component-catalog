@@ -27,9 +27,8 @@ Name | Mandatory | Type | Default Value
 ------------ | ------------- | ------------- | -------------
 name | yes | string |
 location | no | string| [resourceGroup().location]
-enabledForDeployment | no | bool | false
-enabledForTemplateDeployment | no | bool | false
-enabledForDiskEncryption | no | bool | false
+applicationId | no | string | [EMPTY]
+applicationType | no | bool | web
 
 ## Outputs
 
