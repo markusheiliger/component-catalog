@@ -5,7 +5,7 @@ on:
     branches: [ master ]
 
 env:
-  SUBSCRIPTION: " "
+  SUBSCRIPTION: "e2d5340c-6f88-4bc6-8c1e-c5792ec4262b"
   RESOURCEGROUP: "ComponentSpecs"
 
 jobs:
