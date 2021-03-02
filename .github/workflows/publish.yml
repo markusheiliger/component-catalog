@@ -29,8 +29,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-        with:
-          submodules: true
       - name: Hugo Install
         uses: peaceiris/actions-hugo@v2
         with:
@@ -50,6 +48,8 @@ jobs:
           subscriptionId: ${{ env.SUBSCRIPTION }}
           resourceGroupName: ${{ env.RESOURCEGROUP }}
           template: ./_catalog/azuredeploy.json
+      - name: Create Catalog WebSite
+        run: az storage blob service-properties update --account-name ${{ steps.storage_deploy.outputs.accountName }} --static-website --index-document index.html 
       - name: Azure Blob Upload
         uses: bacongobbler/azure-blob-storage-upload@v1.1.1
         with:
