@@ -4,11 +4,11 @@
 	"parameters": {},
 	"functions": [],
 	"variables": {
-		"storageName": "[concat('cat', uniqueString(resourceGroup().id))]"
+		"storageAccountName": "[concat('cat', uniqueString(resourceGroup().id))]"
 	},
 	"resources": [
 		{
-			"name": "[variables('storageName')]",
+			"name": "[variables('storageAccountName')]",
 			"type": "Microsoft.Storage/storageAccounts",
 			"apiVersion": "2019-06-01",
 			"tags": {
@@ -24,11 +24,16 @@
 		{
 			"type": "Microsoft.Storage/storageAccounts/blobServices/containers",
 			"apiVersion": "2018-03-01-preview",
-			"name": "[concat(variables('storageName'), '/default/$web')]",
+			"name": "[concat(variables('storageAccountName'), '/default/$web')]",
 			"dependsOn": [
-				"[resourceId('Microsoft.Storage/storageAccounts', variables('storageName'))]"
+				"[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]"
 			]
 		}
 	],
-	"outputs": {}
+	"outputs": {
+		"connectionString": {  
+            "type": "string",  
+            "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageAccountName'), ';AccountKey=', listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2019-04-01').keys[0].value,';EndpointSuffix=core.windows.net')]"  
+        }
+	}
 }
