@@ -34,9 +34,10 @@ jobs:
       - name: Hugo Install
         uses: peaceiris/actions-hugo@v2
         with:
-          hugo-version: '0.76.3'
+          hugo-version: latest
           extended: true
       - name: Hugo Build
+        working-directory: ./_catalog/site
         run: hugo
       - name: Azure Login
         uses: azure/login@v1
