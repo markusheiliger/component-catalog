@@ -34,6 +34,13 @@ jobs:
         with:
           hugo-version: latest
           extended: true
+      - name: Hugo Prepare
+        run: |
+          find ./_catalog/site/content/component/* -type d -delete
+          for f in $(find . -type f -name 'componentdeploy.json'); do
+            cp -r $(dirname $f) ./_catalog/site/content/component
+            find ./_catalog/site/content/component/ -type f -name 'componentdeploy.json' -delete
+          done
       - name: Hugo Build
         working-directory: ./_catalog/site
         run: hugo

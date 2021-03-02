@@ -11,9 +11,6 @@
 			"name": "[variables('storageAccountName')]",
 			"type": "Microsoft.Storage/storageAccounts",
 			"apiVersion": "2019-06-01",
-			"tags": {
-				"displayName": "Catalog"
-			},
 			"location": "[resourceGroup().location]",
 			"kind": "StorageV2",
 			"sku": {
@@ -22,9 +19,9 @@
 			}
 		},
 		{
+			"name": "[concat(variables('storageAccountName'), '/default/$web')]",
 			"type": "Microsoft.Storage/storageAccounts/blobServices/containers",
 			"apiVersion": "2018-03-01-preview",
-			"name": "[concat(variables('storageAccountName'), '/default/$web')]",
 			"dependsOn": [
 				"[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]"
 			]
