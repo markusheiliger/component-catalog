@@ -44,6 +44,7 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
       - name: Create Catalog Storage
+        id: storage_deploy
         uses: azure/arm-deploy@v1
         with:
           subscriptionId: ${{ env.SUBSCRIPTION }}
@@ -52,7 +53,7 @@ jobs:
       - name: Azure Blob Upload
         uses: bacongobbler/azure-blob-storage-upload@v1.1.1
         with:
-          connection_string: ${{ secrets.AZURE_STORAGE_BLOB_SAS_CONNECTIONSTRING }}
+          connection_string: ${{ steps.storage_deploy.outputs.connectionString }}
           source_dir: public
           container_name: $web
           sync: true
