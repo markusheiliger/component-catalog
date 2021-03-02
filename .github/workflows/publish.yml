@@ -57,7 +57,7 @@ jobs:
           for f in $(find ./_catalog/site/content/ -type f -name 'readme.md'); do
             mv $f $(dirname $f)/_index.md
           done
-          sed -i "s/baseUrl = .*/baseUrl = \"$( az storage account show --subscription ${{ env.SUBSCRIPTION }} --resource-group ${{ env.RESOURCEGROUP }} --name ${{ steps.storage_deploy.outputs.accountName }} --query "primaryEndpoints.web" -o tsv )\"/g ./_catalog/site/config.toml
+          sed -i "s/baseUrl = .*/baseUrl = \"$( az storage account show --subscription ${{ env.SUBSCRIPTION }} --resource-group ${{ env.RESOURCEGROUP }} --name ${{ steps.storage_deploy.outputs.accountName }} --query 'primaryEndpoints.web' -o tsv )\"/g ./_catalog/site/config.toml
       - name: Build Catalog
         working-directory: ./_catalog/site
         run: hugo
