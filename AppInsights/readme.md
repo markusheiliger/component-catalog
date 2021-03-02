@@ -35,3 +35,4 @@ applicationType | no | bool | web
 Name | Type 
 ------------ | ------------- 
 resourceId | string 
+instrumentationKey | string
