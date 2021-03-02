@@ -31,23 +31,30 @@ jobs:
       - uses: actions/checkout@v2
         with:
           submodules: true
+      - name: Hugo Install
+        uses: peaceiris/actions-hugo@v2
+        with:
+          hugo-version: '0.76.3'
+          extended: true
+      - name: Hugo Build
+        run: hugo
       - name: Azure Login
         uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
-      - name: Extract Context Information
-        id: extract_context
-        shell: bash
-        run: |
-          echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
-          echo "##[set-output name=repo;]$(echo ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY})"
-      - name: Ensure Catalog Site
+      - name: Create Catalog Storage
         uses: azure/arm-deploy@v1
         with:
           subscriptionId: ${{ env.SUBSCRIPTION }}
           resourceGroupName: ${{ env.RESOURCEGROUP }}
           template: ./_catalog/azuredeploy.json
-          parameters: repositoryUrl="${{ steps.extract_context.outputs.repo }}" repositoryBranch="${{ steps.extract_context.outputs.branch }}" repositoryToken="${{ secrets.REPO_ADMIN_TOKEN }}"
+      - name: Azure Blob Upload
+        uses: bacongobbler/azure-blob-storage-upload@v1.1.1
+        with:
+          connection_string: ${{ secrets.AZURE_STORAGE_BLOB_SAS_CONNECTIONSTRING }}
+          source_dir: public
+          container_name: $web
+          sync: true
 
   publish_spec:
     name: Publish Spec
