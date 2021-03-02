@@ -4,6 +4,10 @@ on:
   push:
     branches: [ master ]
 
+env:
+  SUBSCRIPTION: "e2d5340c-6f88-4bc6-8c1e-c5792ec4262b"
+  RESOURCEGROUP: "ComponentSpecs"
+
 jobs:
 
   generate_matrix:
@@ -19,6 +23,27 @@ jobs:
 
     outputs:
       templates: ${{ steps.generate_matrix.outputs.templates }}
+
+  publish_catalog:
+    name: Publish Catalog
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: true
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+      - name: Extract branch name
+        id: extract_branch
+        shell: bash
+        run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+      - name: Ensure Catalog Site
+        uses: azure/CLI@v1
+        with:
+          azcliversion: latest
+          inlineScript: az deployment group create --subscription "$SUBSCRIPTION" --resource-group "$RESOURCEGROUP" --name "$( uuidgen )" --no-prompt true --template-file "./_catalog/azuredeploy.json" --parameters repositoryUrl="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY" --parameters repositoryBranch="${{ steps.extract_branch.outputs.branch }}" --parameters repositoryToken="${{ secrets.GITHUB_TOKEN }}"
 
   publish_spec:
     name: Publish Spec
@@ -43,4 +68,4 @@ jobs:
           azcliversion: latest
           inlineScript: |
             TEMPLATE="${{ matrix.template }}"
-            az ts create --subscription d3fed5a4-2ebb-4ad4-93c6-51afcbe01350 --resource-group ComponentSpecs --location "eastus" --name "$(basename $(dirname $TEMPLATE))" --version "$(cat $TEMPLATE | jq --raw-output '.contentVersion')" --template-file "$TEMPLATE" --yes
+            az ts create --subscription "$SUBSCRIPTION" --resource-group "$RESOURCEGROUP" --location "eastus" --name "$(basename $(dirname $TEMPLATE))" --version "$(cat $TEMPLATE | jq --raw-output '.contentVersion')" --template-file "$TEMPLATE" --yes
