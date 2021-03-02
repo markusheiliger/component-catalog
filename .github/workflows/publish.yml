@@ -36,12 +36,12 @@ jobs:
           extended: true
       - name: Hugo Prepare
         run: |
-          find ./_catalog/site/content/component/* -type d -delete
+          find ./_catalog/site/content/* -type d -delete
           for f in $(find . -type f -name 'componentdeploy.json'); do
-            cp -r $(dirname $f) ./_catalog/site/content/component
+            cp -r $(dirname $f) ./_catalog/site/content
           done
-          find ./_catalog/site/content/component/ -type f -name 'componentdeploy.json' -delete
-          for f in $(find . -type f -name 'readme.md'); do
+          find ./_catalog/site/content/ -type f -name 'componentdeploy.json' -delete
+          for f in $(find ./_catalog/site/content/ -type f -name 'readme.md'); do
             mv $f $(dirname $f)/_index.md
           done
       - name: Hugo Build
