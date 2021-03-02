@@ -5,7 +5,7 @@ on:
     branches: [ master ]
 
 env:
-  SUBSCRIPTION: "e2d5340c-6f88-4bc6-8c1e-c5792ec4262b"
+  SUBSCRIPTION: " "
   RESOURCEGROUP: "ComponentSpecs"
 
 jobs:
@@ -34,19 +34,6 @@ jobs:
         with:
           hugo-version: latest
           extended: true
-      - name: Hugo Prepare
-        run: |
-          find ./_catalog/site/content/* -type d -delete
-          for f in $(find . -type f -name 'componentdeploy.json'); do
-            cp -r $(dirname $f) ./_catalog/site/content
-          done
-          find ./_catalog/site/content/ -type f -name 'componentdeploy.json' -delete
-          for f in $(find ./_catalog/site/content/ -type f -name 'readme.md'); do
-            mv $f $(dirname $f)/_index.md
-          done
-      - name: Hugo Build
-        working-directory: ./_catalog/site
-        run: hugo
       - name: Azure Login
         uses: azure/login@v1
         with:
@@ -60,7 +47,21 @@ jobs:
           template: ./_catalog/azuredeploy.json
       - name: Create Catalog WebSite
         run: az storage blob service-properties update --account-name ${{ steps.storage_deploy.outputs.accountName }} --static-website --index-document index.html 
-      - name: Azure Blob Upload
+      - name: Prepare Catalog
+        run: |
+          find ./_catalog/site/content/* -type d -delete
+          for f in $(find . -type f -name 'componentdeploy.json'); do
+            cp -r $(dirname $f) ./_catalog/site/content
+          done
+          find ./_catalog/site/content/ -type f -name 'componentdeploy.json' -delete
+          for f in $(find ./_catalog/site/content/ -type f -name 'readme.md'); do
+            mv $f $(dirname $f)/_index.md
+          done
+          sed -i "s/baseUrl = .*/baseUrl = \"$( az storage account show --subscription ${{ env.SUBSCRIPTION }} --resource-group ${{ env.RESOURCEGROUP }} --name ${{ steps.storage_deploy.outputs.accountName }} --query "primaryEndpoints.web" -o tsv )\"/g ./_catalog/site/config.toml
+      - name: Build Catalog
+        working-directory: ./_catalog/site
+        run: hugo
+      - name: Upload Catalog
         uses: bacongobbler/azure-blob-storage-upload@v1.1.1
         with:
           connection_string: ${{ steps.storage_deploy.outputs.connectionString }}
