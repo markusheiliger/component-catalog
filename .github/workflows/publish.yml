@@ -3,11 +3,15 @@ name: Publish Specs
 on:
   push:
     branches: [ master ]
+<<<<<<< HEAD
 
 env:
   SUBSCRIPTION: "e2d5340c-6f88-4bc6-8c1e-c5792ec4262b"
   RESOURCEGROUP: "ComponentSpecs"
 
+=======
+    
+>>>>>>> 785e793219f49f0e3ab0a6ddcdd0fd20e61b24af
 jobs:
 
   generate_matrix:
