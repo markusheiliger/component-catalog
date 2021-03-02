@@ -39,7 +39,10 @@ jobs:
           find ./_catalog/site/content/component/* -type d -delete
           for f in $(find . -type f -name 'componentdeploy.json'); do
             cp -r $(dirname $f) ./_catalog/site/content/component
-            find ./_catalog/site/content/component/ -type f -name 'componentdeploy.json' -delete
+          done
+          find ./_catalog/site/content/component/ -type f -name 'componentdeploy.json' -delete
+          for f in $(find . -type f -name 'readme.md'); do
+            mv $f $(dirname $f)/_index.md
           done
       - name: Hugo Build
         working-directory: ./_catalog/site
