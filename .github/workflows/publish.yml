@@ -91,5 +91,5 @@ jobs:
         with:
           azcliversion: latest
           inlineScript: |
-            TEMPLATE="${{ matrix.template }}"
-            az ts create --subscription "$SUBSCRIPTION" --resource-group "$RESOURCEGROUP" --location "eastus" --name "$(basename $(dirname $TEMPLATE))" --version "$(cat $TEMPLATE | jq --raw-output '.contentVersion')" --template-file "$TEMPLATE" --yes
+            LOCATION="$(az group show --subscription ${{ env.SUBSCRIPTION }} --resource-group ${{ env.RESOURCEGROUP }} --query 'location' -o tsv)"
+            az ts create --subscription ${{ env.SUBSCRIPTION }} --resource-group ${{ env.RESOURCEGROUP }} --location $LOCATION --name "$(basename $(dirname ${{ matrix.template }}))" --version "$(cat ${{ matrix.template }} | jq --raw-output '.contentVersion')" --template-file "${{ matrix.template }}" --yes
