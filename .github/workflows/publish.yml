@@ -54,7 +54,7 @@ jobs:
         uses: bacongobbler/azure-blob-storage-upload@v1.1.1
         with:
           connection_string: ${{ steps.storage_deploy.outputs.connectionString }}
-          source_dir: public
+          source_dir: ./_catalog/site/public
           container_name: $web
           sync: true
 
