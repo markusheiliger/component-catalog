@@ -1,40 +1,37 @@
 {
 	"$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
 	"contentVersion": "1.0.0.0",
-	"parameters": {
-		"repositoryUrl": {
-			"type": "string"
-		},
-		"repositoryBranch": {
-			"type": "string"
-		},
-		"repositoryToken": {
-			"type": "securestring"
-		}
-	},
+	"parameters": {},
 	"functions": [],
-	"variables": {},
+	"variables": {
+		"storageName": "[concat('cat', uniqueString(resourceGroup().id))]"
+	},
 	"resources": [
-		        {
-            "apiVersion": "2019-12-01-preview",
-            "name": "[concat('cat-', uniqueString(resourceGroup().id))]",
-            "type": "Microsoft.Web/staticSites",
-            "location": "CentralUS",
-            "properties": {
-                "repositoryUrl": "[parameters('repositoryUrl')]",
-                "branch": "[parameters('repositoryBranch')]",
-                "repositoryToken": "[parameters('repositoryToken')]",
-                "buildProperties": {
-                    "appLocation": "_catalog/site",
-                    "apiLocation": "api",
-                    "appArtifactLocation": "public"
-                }
-            },
-            "sku": {
-                "Tier": "Free",
-                "Name": "Free"
-            }
-        }
+		{
+			"name": "[variables('storageName')]",
+			"type": "Microsoft.Storage/storageAccounts",
+			"apiVersion": "2019-06-01",
+			"tags": {
+				"displayName": "Catalog"
+			},
+			"location": "[resourceGroup().location]",
+			"kind": "StorageV2",
+			"sku": {
+				"name": "Premium_LRS",
+				"tier": "Premium"
+			}
+		},
+		{
+			"type": "Microsoft.Storage/storageAccounts/blobServices/containers",
+			"apiVersion": "2018-03-01-preview",
+			"name": "[concat(variables('storageName'), '/default/$web')]",
+			"dependsOn": [
+				"[resourceId('Microsoft.Storage/storageAccounts', variables('storageName'))]"
+			],
+			"properties": {
+				"publicAccess": "Container"
+			}
+		}
 	],
 	"outputs": {}
 }
